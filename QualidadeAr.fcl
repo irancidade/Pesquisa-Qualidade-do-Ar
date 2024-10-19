@@ -1,0 +1,74 @@
+FUNCTION_BLOCK QualidadeAr
+
+VAR_INPUT
+	pm10 : REAL;
+	pm25 : REAL;
+	co : REAL;
+	co2 : REAL;
+	
+END_VAR
+
+VAR_OUTPUT	
+	qualidade : REAL;
+END_VAR
+
+FUZZIFY pm10
+	TERM regular := TRAPE 35.8523809523809 61.7523809523809 143.952380952381 143.952380952381;
+	TERM boa := TRAPE 0.794 1.11 18.2539682539683 52.5;
+END_FUZZIFY
+
+FUZZIFY pm25
+	TERM boa := TRAPE 0.317 0.317 30.4 39.1;
+	TERM regular := TRAPE 31.6666666666667 40.6 60 200;
+	
+END_FUZZIFY
+
+FUZZIFY co2
+	TERM boa := TRAPE 0 0 202.777777777778 273;
+	TERM regular := TRAPE 213.285714285714 267.063492063492 413.285714285714 433.285714285714;
+	
+END_FUZZIFY
+
+FUZZIFY co
+	TERM boa := TRAPE 0 0 269.1 394.4;
+	TERM regular := TRAPE 353.835978835979 387 566 966;
+END_FUZZIFY
+
+
+
+DEFUZZIFY qualidade
+	TERM mbx := TRAPE 0.0212 0.444 1.59 2.13756613756614;
+	TERM baixo := TRAPE 0.8 2.31 3.58 4.50793650793651;
+	TERM malto := TRAPE 11.9153439153439 12.3 16.3 22.7;
+	TERM medio := TRAPE 3.11 4.8 6.87830687830688 8.95;
+	TERM alto := TRAPE 7.05 8.23 10.3068783068783 12.6;
+	METHOD : COG;
+	DEFAULT := 0.0;
+	RANGE := (0.0212 .. 12.6);
+END_DEFUZZIFY
+
+
+
+RULEBLOCK No1
+	ACT : MIN;
+	ACCU : MAX;
+	AND : MIN;
+	RULE 1 : IF pm10 IS boa AND pm25 IS boa AND co IS boa AND co2 IS boa THEN qualidade IS mbx;
+	RULE 2 : IF pm10 IS boa AND pm25 IS boa AND co IS boa AND co2 IS regular THEN qualidade IS baixo;
+	RULE 3 : IF pm10 IS boa AND pm25 IS boa AND co IS regular AND co2 IS boa THEN qualidade IS baixo;
+	RULE 4 : IF pm10 IS boa AND pm25 IS boa AND co IS regular AND co2 IS regular THEN qualidade IS medio;
+	RULE 5 : IF pm10 IS boa AND pm25 IS regular AND co IS boa AND co2 IS boa THEN qualidade IS baixo;
+	RULE 6 : IF pm10 IS boa AND pm25 IS regular AND co IS boa AND co2 IS regular THEN qualidade IS medio;
+	RULE 7 : IF pm10 IS boa AND pm25 IS regular AND co IS regular AND co2 IS boa THEN qualidade IS medio;
+	RULE 8 : IF pm10 IS boa AND pm25 IS regular AND co IS  regular AND co2 IS regular THEN qualidade IS alto;
+	RULE 9 :  IF pm10 IS regular AND pm25 IS boa AND co IS boa AND co2 IS boa THEN qualidade IS baixo;
+	RULE 10 : IF pm10 IS regular AND pm25 IS boa AND co IS boa AND co2 IS regular THEN qualidade IS alto;
+	RULE 11 : IF pm10 IS regular AND pm25 IS boa AND co IS  regular AND co2 IS boa THEN qualidade IS medio;
+	RULE 12 : IF pm10 IS regular AND pm25 IS boa AND co IS  regular AND co2 IS regular THEN qualidade IS malto;
+	RULE 13 : IF pm10 IS regular AND pm25 IS regular AND co IS boa AND co2 IS boa THEN qualidade IS alto;
+    RULE 14 : IF pm10 IS regular AND pm25 IS regular AND co IS boa AND co2 IS regular THEN qualidade IS malto;
+    RULE 15 : IF pm10 IS regular AND pm25 IS regular AND co IS regular AND co2 IS boa THEN qualidade IS alto;
+    RULE 16 : IF pm10 IS regular AND pm25 IS  regular AND co IS regular AND co2 IS regular THEN qualidade IS malto;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

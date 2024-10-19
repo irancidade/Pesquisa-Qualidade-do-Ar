@@ -1,0 +1,164 @@
+
+#include <FuzzyLite.h>
+
+// Definindo as variáveis de entrada
+fuzzy::FuzzyLite pm10;
+fuzzy::FuzzyLite pm25;
+fuzzy::FuzzyLite co2;
+fuzzy::FuzzyLite co;
+
+// Definindo a variável de saída
+fuzzy::FuzzyLite qualidade;
+
+void setup() {
+  // Definindo as funções de pertinência para a variável pm10
+  fuzzy::Trapezoid pm10Regular(35.8523809523809, 61.7523809523809, 143.952380952381, 243.952380952381);
+  fuzzy::Trapezoid pm10Boa(0.794, 1.11, 18.2539682539683, 52.5);
+  pm10.addTerm(&pm10Regular);
+  pm10.addTerm(&pm10Boa);
+  
+  // Definindo as funções de pertinência para a variável pm25
+  fuzzy::Trapezoid pm25Boa(0.317, 0.317, 30.4, 39.1);
+  fuzzy::Trapezoid pm25Regular(31.6666666666667, 40.6, 60, 230);
+  pm25.addTerm(&pm25Boa);
+  pm25.addTerm(&pm25Regular);
+  
+  // Definindo as funções de pertinência para a variável co2
+  fuzzy::Trapezoid co2Boa(0, 0, 202.777777777778, 273);
+  fuzzy::Trapezoid co2Regular(213.285714285714, 267.063492063492, 413.285714285714, 433.285714285714);
+  co2.addTerm(&co2Boa);
+  co2.addTerm(&co2Regular);
+  
+  // Definindo as funções de pertinência para a variável co
+  fuzzy::Trapezoid coBoa(0, 0, 269.1, 394.4);
+  fuzzy::Trapezoid coRegular(353.835978835979, 387, 566, 966);
+  co.addTerm(&coBoa);
+  co.addTerm(&coRegular);
+
+  // Definindo as funções de pertinência para a variável de saída
+  fuzzy::Trapezoid qualidadeMboa(0.0212, 0.444, 1.59, 2.13756613756614);
+  fuzzy::Trapezoid qualidadeBoa(0.8, 2.31, 3.58, 4.50793650793651);
+  fuzzy::Trapezoid qualidadeMruim(11.9153439153439, 12.3, 16.3, 22.7);
+  fuzzy::Trapezoid qualidadeMedia(3.11, 4.8, 6.87830687830688,8.95);
+  fuzzy::Trapezoid qualidadeRuim( 7.05, 8.23, 10.3068783068783, 12.6);
+
+
+// Definindo as regras
+fuzzy::RuleBlock rules;
+
+// RULE 1: IF pm10 IS boa AND pm25 IS boa AND co IS boa AND co2 IS boa THEN qualidade IS mboa;
+fuzzy::TNorm* tnorm1 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm1 = new fuzzy::Maximum();
+fuzzy::Term* ant1[] = {&pm10Boa, &pm25Boa, &coBoa, &co2Boa};
+fuzzy::Term* cons1[] = {&qualidadeMboa};
+rules.addRule(fuzzy::Rule(1, tnorm1, snorm1, ant1, 4, cons1, 1));
+
+// RULE 2: IF pm10 IS boa AND pm25 IS boa AND co IS boa AND co2 IS regular THEN qualidade IS boa;
+fuzzy::TNorm* tnorm2 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm2 = new fuzzy::Maximum();
+fuzzy::Term* ant2[] = {&pm10Boa, &pm25Boa, &coBoa, &co2Regular};
+fuzzy::Term* cons2[] = {&qualidadeBoa};
+rules.addRule(fuzzy::Rule(2, tnorm2, snorm2, ant2, 4, cons2, 1));
+
+// RULE 3: IF pm10 IS boa AND pm25 IS boa AND co IS regular AND co2 IS boa THEN qualidade IS boa;
+fuzzy::TNorm* tnorm3 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm3 = new fuzzy::Maximum();
+fuzzy::Term* ant3[] = {&pm10Boa, &pm25Boa, &coRegular, &co2Boa};
+fuzzy::Term* cons3[] = {&qualidadeBoa};
+rules.addRule(fuzzy::Rule(3, tnorm3, snorm3, ant3, 4, cons3, 1));
+
+// RULE 4: IF pm10 IS boa AND pm25 IS boa AND co IS regular AND co2 IS regular THEN qualidade IS media;
+fuzzy::TNorm* tnorm4 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm4 = new fuzzy::Maximum();
+fuzzy::Term* ant4[] = {&pm10Boa, &pm25Boa, &coRegular, &co2Regular};
+fuzzy::Term* cons4[] = {&qualidadeMedia};
+rules.addRule(fuzzy::Rule(4, tnorm4, snorm4, ant4, 4, cons4, 1));
+
+// RULE 5: IF pm10 IS boa AND pm25 IS regular AND co IS boa AND co2 IS boa THEN qualidade IS boa;
+fuzzy::TNorm* tnorm5 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm5 = new fuzzy::Maximum();
+fuzzy::Term* ant5[] = {&pm10Boa, &pm25Regular, &coBoa, &co2Boa};
+fuzzy::Term* cons5[] = {&qualidadeBoa};
+rules.addRule(fuzzy::Rule(5, tnorm5, snorm5, ant5, 4, cons5, 1));
+
+// RULE 6: IF pm10 IS boa AND pm25 IS regular AND co IS boa AND co2 IS regular THEN qualidade IS media;
+fuzzy::TNorm* tnorm6 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm6 = new fuzzy::Maximum();
+fuzzy::Term* ant6[] = {&pm10Boa, &pm25Regular, &coBoa, &co2Regular};
+fuzzy::Term* cons6[] = {&qualidadeMedia};
+rules.addRule(fuzzy::Rule(6, tnorm6, snorm6, ant6, 4, cons6, 1));
+
+//RULE 7 : IF pm10 IS boa AND pm25 IS regular AND co IS regular AND co2 IS boa THEN qualidade IS media;
+fuzzy::TNorm* tnorm7 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm7 = new fuzzy::Maximum();
+fuzzy::Term* ant7[] = {&pm10Boa, &pm25Regular, &coRegular, &co2Boa};
+fuzzy::Term* cons7[] = {&qualidadeMedia};
+rules.addRule(fuzzy::Rule(7, tnorm7, snorm7, ant7, 4, cons7, 1));
+
+//RULE 8 : IF pm10 IS boa AND pm25 IS regular AND co IS  regular AND co2 IS regular THEN qualidade IS ruim;
+fuzzy::TNorm* tnorm8 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm8 = new fuzzy::Maximum();
+fuzzy::Term* ant8[] = {&pm10Boa, &pm25Regular, &coRegular, &co2Regular};
+fuzzy::Term* cons8[] = {&qualidadeRuim};
+rules.addRule(fuzzy::Rule(8, tnorm8, snorm8, ant8, 4, cons8, 1));
+
+//RULE 9 :  IF pm10 IS regular AND pm25 IS boa AND co IS boa AND co2 IS boa THEN qualidade IS boa;
+fuzzy::TNorm* tnorm9 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm9 = new fuzzy::Maximum();
+fuzzy::Term* ant9[] = {&pm10Regular, &pm25Boa, &coBoa, &co2Boa};
+fuzzy::Term* cons9[] = {&qualidadeBoa};
+rules.addRule(fuzzy::Rule(9, tnorm9, snorm9, ant9, 4, cons9, 1));
+
+//RULE 10 : IF pm10 IS regular AND pm25 IS boa AND co IS boa AND co2 IS regular THEN qualidade IS ruim;
+fuzzy::TNorm* tnorm10 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm10 = new fuzzy::Maximum();
+fuzzy::Term* ant10[] = {&pm10Regular, &pm25Boa, &coBoa, &co2Regular};
+fuzzy::Term* cons10[] = {&qualidadeRuim};
+rules.addRule(fuzzy::Rule(10, tnorm10, snorm10, ant10, 4, cons10, 1));
+
+//RULE 11 : IF pm10 IS regular AND pm25 IS boa AND co IS  regular AND co2 IS boa THEN qualidade IS media;
+fuzzy::TNorm* tnorm11 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm11 = new fuzzy::Maximum();
+fuzzy::Term* ant11[] = {&pm10Regular, &pm25Boa, &coRegular, &co2Boa};
+fuzzy::Term* cons11[] = {&qualidadeMedia};
+rules.addRule(fuzzy::Rule(11, tnorm11, snorm11, ant11, 4, cons11, 1));
+
+//RULE 12 : IF pm10 IS regular AND pm25 IS boa AND co IS  regular AND co2 IS regular THEN qualidade IS mruim;
+fuzzy::TNorm* tnorm11 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm11 = new fuzzy::Maximum();
+fuzzy::Term* ant11[] = {&pm10Regular, &pm25Boa, &coRegular, &co2Regular};
+fuzzy::Term* cons11[] = {&qualidadeMruim};
+rules.addRule(fuzzy::Rule(11, tnorm11, snorm11, ant11, 4, cons11, 1));
+
+//RULE 13 : IF pm10 IS regular AND pm25 IS regular AND co IS boa AND co2 IS boa THEN qualidade IS ruim;
+fuzzy::TNorm* tnorm13 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm13 = new fuzzy::Maximum();
+fuzzy::Term* ant13[] = {&pm10Regular, &pm25Regular, &coBoa, &co2Boa};
+fuzzy::Term* cons13[] = {&qualidadeRuim};
+rules.addRule(fuzzy::Rule(13, tnorm13, snorm13, ant13, 4, cons13, 1));
+
+//RULE 14 : IF pm10 IS regular AND pm25 IS regular AND co IS boa AND co2 IS regular THEN qualidade IS ruim;
+fuzzy::TNorm* tnorm14 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm14 = new fuzzy::Maximum();
+fuzzy::Term* ant14[] = {&pm10Regular, &pm25Regular, &coBoa, &co2Regular};
+fuzzy::Term* cons14[] = {&qualidadeRuim};
+rules.addRule(fuzzy::Rule(14, tnorm14, snorm14, ant14, 4, cons14, 1));
+
+//RULE 15 : IF pm10 IS regular AND pm25 IS regular AND co IS regular AND co2 IS boa THEN qualidade IS ruim;
+fuzzy::TNorm* tnorm15 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm15 = new fuzzy::Maximum();
+fuzzy::Term* ant15[] = {&pm10Regular, &pm25Regular, &coRegular, &co2Boa};
+fuzzy::Term* cons15[] = {&qualidadeRuim};
+rules.addRule(fuzzy::Rule(15, tnorm15, snorm15, ant15, 4, cons15, 1));
+
+//RULE 16 : IF pm10 IS regular AND pm25 IS  regular AND co IS regular AND co2 IS regular THEN qualidade IS mruim
+fuzzy::TNorm* tnorm16 = new fuzzy::Minimum();
+fuzzy::SNorm* snorm16 = new fuzzy::Maximum();
+fuzzy::Term* ant16[] = {&pm10Regular, &pm25Regular, &coRegular, &co2Regular};
+fuzzy::Term* cons16[] = {&qualidadeMruim};
+rules.addRule(fuzzy::Rule(16, tnorm16, snorm16, ant16, 4, cons16, 1));
+
+
+	
+    
+  

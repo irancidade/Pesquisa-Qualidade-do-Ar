@@ -1,0 +1,7 @@
+http://jfuzzylogic.sourceforge.net/html/manual.html#plugin
+
+http://jfuzzylogic.sourceforge.net/html/index.html
+
+Arquivos de teste e centroide
+
+path--> src/net/sourceforge/jFuzzyLogic/demo/tipper/TesteQualidade.java e TesteCentroid.java

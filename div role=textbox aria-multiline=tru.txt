@@ -1,0 +1,3 @@
+<div role="textbox" aria-multiline="true" aria-label="Adicionar texto..." aria-readonly="false" class="block-editor-rich-text__editable wp-block-button__link has-custom-width rich-text" contenteditable="true" style="border-radius: 6px; width: 100%; white-space: pre-wrap; min-width: 1px;">Enviar Mensagem</div>
+
+<div class="wp-block-button wp-block-jetpack-button nfd-jp-form__submit"><div role="textbox" aria-multiline="true" aria-label="Adicionar texto..." aria-readonly="false" class="block-editor-rich-text__editable wp-block-button__link has-custom-width rich-text" contenteditable="true" style="border-radius: 6px; width: 100%; white-space: pre-wrap; min-width: 1px;">Enviar Mensagem</div></div>

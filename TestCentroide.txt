@@ -1,0 +1,57 @@
+package net.sourceforge.jFuzzyLogic.demo.tipper;
+
+import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.FunctionBlock;
+import net.sourceforge.jFuzzyLogic.Gpr;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
+import net.sourceforge.jFuzzyLogic.rule.Variable;
+
+/**
+ *  Teste função bloco deslocar centroide
+ * @author irancidade
+ *
+ */
+
+public class TestCentroid {
+	
+	public static void main(String[] args) throws Exception {
+		// Load from 'FCL' file
+		String fileName = "fcl/QualidadeAr.fcl";
+		FIS fis = FIS.load(fileName, true);
+		if (fis == null) { // Error while loading?
+			System.err.println("Can't load file: '" + fileName + "'");
+			return;
+		}
+		
+		//Mostrar as regras da base de conhecimento
+		FunctionBlock functionBlock = fis.getFunctionBlock(null);
+		JFuzzyChart.get().chart(functionBlock);
+         
+		///Set entradas
+		functionBlock.setVariable("co2", 104);
+		functionBlock.setVariable("co", 500);
+		functionBlock.setVariable("pm10", 119.27);
+		functionBlock.setVariable("pm25",119.27);
+		
+		// Evaluate 
+				functionBlock.evaluate();
+				
+	   // Mostrar variáveis
+				
+				Variable qualify = functionBlock.getVariable("quality");
+				JFuzzyChart.get().chart(qualify, qualify.getDefuzzifier(), true);
+				Gpr.debug("boa[pm10]: " + functionBlock.getVariable("pm10").getMembership("good"));
+				Gpr.debug("boa[pm25]: " + functionBlock.getVariable("pm25").getMembership("good"));
+				Gpr.debug("boa[co]: " + functionBlock.getVariable("co").getMembership("good"));
+				Gpr.debug("boa[co2]: " + functionBlock.getVariable("co2").getMembership("good"));
+				
+				// Configurações de cores para os gráficos
+				
+      //imprime regras
+				// Print ruleSet
+				System.out.println(functionBlock);
+				System.out.println("quality:" + functionBlock.getVariable("quality").getValue());
+		
+	}
+
+}
